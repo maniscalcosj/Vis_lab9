@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    
+    <title>Maniscalco-Lab9-VegaLite</title>
+    <title>Maniscalco-Lab9-VegaLite</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.22.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.6.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.21.0"></script>
+
+    <style media="screen">
+      /* Add space between Vega-Embed links  */
+      .vega-actions a {
+        margin-right: 5px;
+      }
+    </style>
+    
+  </head>
+  
+  <body>
+  
+    <h1> COVID-19 State Data </h1>
+    
+    <div id="vis"/>
+  
+    <script>
+      var spec = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+        "data": {
+          "url": "https://raw.githubusercontent.com/bcviscourse/datasets/master/lab9-covidtracking.csv"
+        },
+        "vconcat": [
+          {
+            "width": 1000,
+            "height": 150,
+            "title": "COVID-19 State Reported Cases and Deaths",
+            "mark": {
+              "type": "point" 
+              /*"tooltip": true*/
+            },
+            "params": [{
+              "name": "brush", 
+              "select": {
+                "type": "interval"
+              }
+            }],
+            "encoding": {
+              "x": {
+                "field": "positive", 
+                "type": "quantitative",
+                "title": "Number of Positive Cases"
+              },
+              "y": {
+                "field": "death", 
+                "type": "quantitative",
+                "title": "Number of Deaths"
+              },
+              "tooltip": [
+                {"field": "positive", 
+                "type": "quantitative",
+                "title": "Number of Positive Cases",
+                "format": ","},
+                {"field": "death", 
+                "type": "quantitative",
+                "title": "Number of Deaths",
+                "format": ","},
+                {"field": "state", 
+                "type": "nominal",
+                "title": "State"}
+              ],
+              "color": {
+                "condition": {
+                  "param": "brush",
+                  "field": "dataQualityGrade",
+                  "type": "nominal",
+                  "title": "Data Quality Grade"
+                },
+                "value": "gray"
+              }
+            }
+          },
+          {
+            "repeat": ["hospitalizedCumulative", "recovered"],
+            "columns": 1,
+            "transform": [{
+              "filter": {
+                "param":"brush"
+              }
+            }],
+            "spec": {
+              "width": 1000,
+              "height": 200,
+              "mark": {
+                "type": "bar"
+              },
+              "encoding": {
+                "x": { 
+                  "field": "state", 
+                  "type": "nominal", 
+                  "axis": {"labelAngle": 60},
+                  "title": "State"
+                },
+                "y": {
+                  "field": {
+                    "repeat": "repeat"
+                  },
+                  "type": "quantitative"
+                },
+                "color": {
+                  "value": "#8E07AF"  
+                }
+              }
+            }
+          }
+        ]
+      }
+      // Embed the visualization in the container with id `vis`
+      vegaEmbed('#vis', spec);
+    </script>
+  
+  </body>
+  
+</html>
